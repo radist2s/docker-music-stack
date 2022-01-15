@@ -1,0 +1,41 @@
+(radio_auth) {
+    basicauth * bcrypt {
+      radist2s JDJhJDEwJGRuQXNJemcvT1hVVTE5WnB0WlV5Ry5KaGlwZXNILmN6OU81L0NSeXZGbjZjemdxTlZEL0ky
+      2k JDJhJDEwJG9ibHVLTGdzSGZFdUpEc1NueWJPTk9HR3RlQy5iRnhvWUxpcHF0N01FQlUxN1Vvazh5UW5L
+      scream JDJhJDEwJHptWGtvcjRnanpQRzZ3SjlFVEI0QmUwUmlxU0FHRkswajlqZUNCY0pBWnk3QTAyMzRMZEFX
+    }
+}
+
+# ympd
+:8081 {
+    import radio_auth
+    reverse_proxy ympd:8081
+}
+
+# icecast
+:8000 {
+    route /file-browser/* {
+        import radio_auth
+        reverse_proxy file_browser:8080
+    }
+
+    route /ympd/* {
+        import radio_auth
+        uri strip_prefix /ympd
+        reverse_proxy ympd:8081
+    }
+
+    @get_stream {
+      method GET
+      path /mpd
+    }
+
+    route @get_stream {
+        reverse_proxy icecast:8000
+    }
+
+    route {
+        import radio_auth
+        reverse_proxy icecast:8000
+    }
+}

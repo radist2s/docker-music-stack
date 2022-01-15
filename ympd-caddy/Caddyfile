@@ -1,8 +1,0 @@
-:8081
-
-reverse_proxy ympd:8081
-
-basicauth * bcrypt {
-	scream JDJhJDEwJEJvdmJZTk9ONXNUZWg5R1JGaWRVei5aYjk0cy51dEtYQ0VXSklzdjhaTDZwQkVYd29taVFX
-}
-

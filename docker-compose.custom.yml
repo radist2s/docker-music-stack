@@ -9,7 +9,7 @@ services:
     depends_on:
       - icecast
     networks:
-      - mpd
+      - music_stack
     volumes:
       - mpd_music:/var/lib/mpd/music
       - mpd_playlists:/var/lib/mpd/playlists
@@ -30,46 +30,67 @@ services:
     image: alpine-ympd:custom
     depends_on:
       - mpd
-      - ympd-caddy
     networks:
-      - mpd
+      - music_stack
+    restart: unless-stopped
 
-  ympd-caddy:
+  caddy:
     image: caddy/caddy:latest
     ports:
       - "8081:8081"
+      - "8000:8000"
     volumes:
-      - ./ympd-caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
       - mpd
     networks:
-      - mpd
       - music_stack
+      - public_network
+    restart: unless-stopped
 
-  file-browser:
+  file_browser:
     image: filebrowser/filebrowser:latest
     volumes:
       - filebrowser_db:/database
-      - mpd_music:/srv
+      - mpd_music:/srv/scream/mpd_music
+      - recorder_uploads:/srv/scream/recorder_uploads
       - ./file-browser/settings.json:/.filebrowser.json
-    ports:
-      - "8080:8080"
     networks:
       - music_stack
+    restart: unless-stopped
 
   icecast:
     build:
       context: icecast/
     image: alpine-icecast:custom
-    ports:
-      - "8000:8000"
     networks:
-      - mpd
       - music_stack
+    restart: unless-stopped
+
+  ssh-upload-server:
+    image: lscr.io/linuxserver/openssh-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - PUBLIC_KEY_FILE=/id_rsa.pub
+      - PUBLIC_KEY_URL=https://github.com/radist2s.keys
+      - SUDO_ACCESS=false
+      - PASSWORD_ACCESS=false
+      - USER_PASSWORD=recorder
+      - USER_NAME=recorder
+    volumes:
+      - ./ssh-upload-server/id_rsa.pub:/id_rsa.pub
+      - recorder_uploads:/recorder_uploads
+    ports:
+      - "2222:2222"
+    restart: unless-stopped
+    networks:
+      - public_network
 
 networks:
-  mpd:
   music_stack:
+  public_network:
     driver: bridge
 
 volumes:
@@ -80,5 +101,6 @@ volumes:
   mpd_music:
     external: true
   filebrowser_db:
-
+  recorder_uploads:
+    external: true
 
