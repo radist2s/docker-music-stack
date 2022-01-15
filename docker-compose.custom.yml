@@ -1,0 +1,98 @@
+version: '3.1'
+
+services:
+  # Add your host volumen in path/to/... or add your own volume below
+  mpd:
+    build:
+      context: mpd/
+    image: alpine-mpd:custom
+#    ports:
+#      - "6600:6600"
+    depends_on:
+      - icecast
+    networks:
+      - mpd
+    volumes:
+      - mpd_music:/var/lib/mpd/music
+      - mpd_playlists:/var/lib/mpd/playlists
+      - mpd_database:/var/lib/mpd/database
+
+#  sima:
+#    build:
+#      context: sima/
+#    image: alpine-sima:custom
+#    depends_on:
+#      - mpd
+#    networks:
+#      - music_stack
+
+  ympd:
+    build:
+      context: ympd/
+    image: alpine-ympd:custom
+#    ports:
+#      - "8081:8081"
+#    command: ["ympd", "-h", "mpd", "-p", "6600", "-w", "8081"]
+    depends_on:
+      - mpd
+      - ympd-caddy
+    networks:
+      - mpd
+
+  ympd-caddy:
+    image: caddy/caddy:latest
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./ympd-caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - mpd
+    networks:
+      - mpd
+      - music_stack
+
+  file-browser:
+    image: filebrowser/filebrowser:latest
+    volumes:
+      - filebrowser_db:/database
+      - mpd_music:/srv
+      - ./file-browser/settings.json:/.filebrowser.json
+    ports:
+      - "8080:8080"
+    networks:
+      - music_stack
+
+  icecast:
+    build:
+      context: icecast/
+    image: alpine-icecast:custom
+    ports:
+      - "8000:8000"
+    networks:
+      - mpd
+      - music_stack
+
+#  upload-server:
+#    build:
+#      context: .
+#      dockerfile: upload-server/Dockerfile
+#    volumes:
+#      - ./uploads:/uploads
+#    ports:
+#      - "3855:3854"
+#    command: [ "false" ]
+networks:
+  mpd:
+  music_stack:
+    driver: bridge
+
+volumes:
+  mpd_playlists:
+    external: true
+  mpd_database:
+    external: true
+  mpd_music:
+    external: true
+  filebrowser_db:
+
+

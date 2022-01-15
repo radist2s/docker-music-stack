@@ -1,7 +1,7 @@
 FROM alpine:3.3
-MAINTAINER @VITIMan 
+MAINTAINER @VITIMan
 
-# docker run -p 8080:8080 --net music_stack --name=ympd -d alpine-ympd:dev
+# docker run -p 8081:8081 --net music_stack --name=ympd -d alpine-ympd:dev
 
 ENV YMPD_VERSION 1.3.0
 
@@ -31,6 +31,6 @@ RUN cmake .. -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_INSTALL_PRE
 RUN apk -q --no-progress del cmake gcc g++ openssl-dev libmpdclient-dev curl \
     && rm -rf /var/cache/apk/*
  
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["ympd", "-h", "mpd", "-p", "6600", "-w", "8080"]
+CMD ["ympd", "-h", "mpd", "-p", "6600", "-w", "8081"]
