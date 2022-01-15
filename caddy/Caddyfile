@@ -14,10 +14,14 @@
 
 # icecast
 :8000 {
+    redir /file-browser /file-browser/ permanent
+
     route /file-browser/* {
         import radio_auth
         reverse_proxy file_browser:8080
     }
+
+    redir /ympd /ympd/ permanent
 
     route /ympd/* {
         import radio_auth
