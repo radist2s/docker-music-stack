@@ -6,8 +6,6 @@ services:
     build:
       context: mpd/
     image: alpine-mpd:custom
-#    ports:
-#      - "6600:6600"
     depends_on:
       - icecast
     networks:
@@ -30,9 +28,6 @@ services:
     build:
       context: ympd/
     image: alpine-ympd:custom
-#    ports:
-#      - "8081:8081"
-#    command: ["ympd", "-h", "mpd", "-p", "6600", "-w", "8081"]
     depends_on:
       - mpd
       - ympd-caddy
@@ -72,15 +67,6 @@ services:
       - mpd
       - music_stack
 
-#  upload-server:
-#    build:
-#      context: .
-#      dockerfile: upload-server/Dockerfile
-#    volumes:
-#      - ./uploads:/uploads
-#    ports:
-#      - "3855:3854"
-#    command: [ "false" ]
 networks:
   mpd:
   music_stack:
