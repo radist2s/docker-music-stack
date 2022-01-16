@@ -68,10 +68,11 @@ services:
     restart: unless-stopped
 
   ssh-upload-server:
-    image: lscr.io/linuxserver/openssh-server
+    build:
+      context: ssh-upload-server/
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=0
+      - PGID=0
       - TZ=Europe/London
       - PUBLIC_KEY_FILE=/id_rsa.pub
       - PUBLIC_KEY_URL=https://github.com/radist2s.keys
