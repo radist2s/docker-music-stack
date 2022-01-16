@@ -1,0 +1,4 @@
+[ssh]
+type = tcp
+listen_port = 6000
+auth_token = 123

@@ -88,6 +88,11 @@ services:
     restart: unless-stopped
     networks:
       - public_network
+  frps:
+    image: fatedier/frp:latest
+    volumes:
+      - ./frps/frps.ini:/frps.ini
+    command: ["/usr/bin/frps", "-c", "/frps.ini"]
 
 networks:
   music_stack:
