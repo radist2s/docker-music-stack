@@ -59,6 +59,12 @@ Use [host volumes](https://docs.docker.com/engine/userguide/containers/dockervol
 
     docker run -p 8080:8080 --net music_stack --name=ympd -d vitiman/alpine-ympd:latest
 
+6. Use ssh upload server
+   add ssh public key into `./ssh-upload-server/id_rsa.pub`,
+   then connect to the server via ssh:
+   ```bash
+   ssh -p 2222 -i /path/to/private/id_rsa your-server.com
+   ```
 ## Passwords, users and credentials
 
 It's strongly recommended to change passwords in icecast.xml and mpd.conf.
